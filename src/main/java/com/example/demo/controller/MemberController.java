@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,13 +40,6 @@ public class MemberController {
         memberService.signUp(memberDTO);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(200, "success", null));
     }
-
-    /*
-	@PostMapping("login")
-	public String login(Model model) {
-        return "login";  
-    }
-	*/
 	
 	
 	// 회원 목록 조회 (페이징)

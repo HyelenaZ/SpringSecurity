@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>이용자 분석</title>
+    <link rel="stylesheet" th:href="@{/static/css/common.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="title">방문자 분석</div>
+        
+        <!-- 전체 방문자 수 -->
+        <div class="stats-card">
+            <h2>전체 방문자 수</h2>
+            <div class="stats-value" th:text="${totalVisitors} + '명'"></div>
+        </div>
+
+        <!-- 시간대별 방문자 통계 -->
+        <div class="stats-section">
+            <h2>시간대별 방문자 분석</h2>
+            <div class="stats-chart" id="hourlyChart"></div>
+            <div class="stats-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>시간대</th>
+                            <th>방문자 수</th>
+                            <th>비율</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="stat : ${hourlyStats}">
+                            <td th:text="${stat.hour_of_day} + '시'"></td>
+                            <td th:text="${stat.visit_count} + '명'"></td>
+                            <td th:text="${#numbers.formatDecimal((stat.visit_count * 100.0 / totalVisitors), 1, 1)} + '%'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 요일별 방문자 통계 -->
+        <div class="stats-section">
+            <h2>요일별 방문자 분석</h2>
+            <div class="stats-chart" id="dailyChart"></div>
+            <div class="stats-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>요일</th>
+                            <th>방문자 수</th>
+                            <th>비율</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="stat : ${dailyStats}">
+                            <td th:text="${stat.day_of_week}"></td>
+                            <td th:text="${stat.visit_count} + '명'"></td>
+                            <td th:text="${#numbers.formatDecimal((stat.visit_count * 100.0 / totalVisitors), 1, 1)} + '%'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 차트 생성을 위한 JavaScript -->
+    <script th:inline="javascript">
+        // Thymeleaf로부터 데이터 가져오기
+        const hourlyStats = /*[[${hourlyStats}]]*/ [];
+        const dailyStats = /*[[${dailyStats}]]*/ [];
+
+        // Recharts 차트 생성
+        const HourlyChart = () => {
+            return (
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={hourlyStats}>
+                        <XAxis dataKey="hour_of_day" />
+                        <YAxis />
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="visit_count" name="방문자 수" stroke="#BE97EC" />
+                    </LineChart>
+                </ResponsiveContainer>
+            );
+        };
+
+        const DailyChart = () => {
+            return (
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={dailyStats}>
+                        <XAxis dataKey="day_of_week" />
+                        <YAxis />
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="visit_count" name="방문자 수" fill="#BE97EC" />
+                    </BarChart>
+                </ResponsiveContainer>
+            );
+        };
+
+        // 차트 렌더링
+        ReactDOM.render(<HourlyChart />, document.getElementById('hourlyChart'));
+        ReactDOM.render(<DailyChart />, document.getElementById('dailyChart'));
+    </script>
+</body>
+</html>
